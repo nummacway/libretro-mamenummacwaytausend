@@ -1,6 +1,6 @@
 *.o
 obj_*
 retro.dll
-libretro.*
+#libretro.*
 *.so
 *.a
