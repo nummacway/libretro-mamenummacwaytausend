@@ -775,7 +775,6 @@ void retro_run(void)
    audio_done = 0;
    video_done = 0;
 
-#ifndef WANT_LIBCO
    unlock_mame();
 #endif
 
