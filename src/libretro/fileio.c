@@ -1448,8 +1448,9 @@ int osd_display_loading_rom_message (const char *name, int current, int total)
 		printf ("loading %-12s\n", name);
 	else
 		printf ("             \n");
+#if !defined(SF2000)
 	fflush (stdout);
-
+#endif
 	if( keyboard_pressed (KEYCODE_LCONTROL) && keyboard_pressed (KEYCODE_C) )
 		return 1;
 

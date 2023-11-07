@@ -89,7 +89,11 @@ void decompose_rom_sample_path(char *rompath, char *samplepath);
 void init_joy_list(void);
 
 extern UINT32 create_path_recursive(char *path);
-	
+
+#if defined(SF2000)
+static retro_log_printf_t log_cb;
+#endif
+
 #if defined(_3DS)
 void* linearMemAlign(size_t size, size_t alignment);
 void linearFree(void* mem);
@@ -98,10 +102,14 @@ void linearFree(void* mem);
 void CLIB_DECL logerror(const char *text,...)
 {
 #ifdef DISABLE_ERROR_LOGGING
+#if defined(SF2000)
+   //log_cb(RETRO_LOG_DEBUG, text);
+#else
    va_list arg;
    va_start(arg,text);
    vprintf(text,arg);
    va_end(arg);
+#endif
 #endif
 }
 
@@ -119,11 +127,22 @@ int attenuation = 0;
 
 void gp2x_printf(char* fmt, ...)
 {
-   va_list marker;
-	
-   va_start(marker, fmt);
-   vprintf(fmt, marker);
-   va_end(marker);
+#if defined(SF2000)
+	char buffer[500];
+
+	va_list args;
+	va_start(args, fmt);
+	vsnprintf(buffer, sizeof(buffer), fmt, args);
+	va_end(args);
+
+	if (log_cb)
+		log_cb(RETRO_LOG_INFO, buffer);
+#else
+    va_list marker;
+    va_start(marker, fmt);
+    vprintf(fmt, marker);
+    va_end(marker);
+#endif
 }
 
 void gp2x_set_video_mode(int bpp,int width,int height)
@@ -140,6 +159,9 @@ void gp2x_video_setpalette(void)
 unsigned long gp2x_joystick_read(int n)
 {
    (void)n;
+#if defined(SF2000)
+   return 0;
+#endif
 }
 
 int osd_init(void)
@@ -316,6 +338,14 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb = cb;
     
    cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars);
+   
+#if defined(SF2000)
+   struct retro_log_callback log;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
+      log_cb = log.log;
+   else
+      log_cb = NULL;
+#endif
 }
 
 void retro_set_audio_sample(retro_audio_sample_t cb)
@@ -350,8 +380,13 @@ void retro_reset(void)
 
 static void update_input(void)
 {
+#if !defined(SF2000)
 #define RK(port,key)     input_state_cb(port, RETRO_DEVICE_KEYBOARD, 0,RETROK_##key)
 #define JS(port, button) joypad_bits & (1 << RETRO_DEVICE_ID_JOYPAD_##button)
+#else
+#define RK(port,key)     (input_state_cb(port, RETRO_DEVICE_KEYBOARD, 0,RETROK_##key))
+#define JS(port, button) (joypad_bits & (1 << RETRO_DEVICE_ID_JOYPAD_##button))
+#endif
 	int i, j, c = 0;
 	input_poll_cb();
 	
@@ -388,7 +423,11 @@ static void update_input(void)
 		joy_pressed[c++] = JS(i, L);
 		joy_pressed[c++] = JS(i, R);
 
+#if defined(SF2000)
+		key[KEY_TAB] |= (JS(i, L) > 0) && (JS(i, START) > 0);
+#else
 		key[KEY_TAB] |= JS(i, R2);
+#endif
 	}
 
 	key[KEY_A] =RK(0, a);
@@ -515,8 +554,14 @@ void hook_video_done(void)
 void run_thread_proc(void)
 {
    run_game(game_index);
+#if !defined(SF2000)
    hook_audio_done();
    hook_video_done();
+#else
+   // never exit a co-thread
+   while (true)
+      co_switch(main_thread);
+#endif
 }
 #else
 static void hook_check(void)
@@ -548,6 +593,7 @@ void hook_video_done(void)
    slock_unlock(libretro_mutex);
 }
 
+#if !defined(SF2000)
 #ifdef WANT_LIBCO
 void *run_thread_proc(void *v)
 {
@@ -560,6 +606,15 @@ void *run_thread_proc(void *v)
 
    return NULL;
 }
+#else
+void run_thread_proc(void *v)
+{
+   run_game(game_index);
+   thread_done = 1;
+   hook_audio_done();
+   hook_video_done();
+}
+#endif
 #else
 void run_thread_proc(void *v)
 {
@@ -716,6 +771,7 @@ void retro_run(void)
       }
    }
 
+#ifndef WANT_LIBCO
    audio_done = 0;
    video_done = 0;
 
@@ -804,7 +860,11 @@ bool retro_load_game(const struct retro_game_info *info)
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
    {
+#if !defined(SF2000)
       fprintf(stderr, "[libretro]: RGB565 is not supported.\n");
+#else
+      logerror("[libretro]: RGB565 is not supported.\n");
+#endif
       return false;
    }
 
@@ -834,8 +894,14 @@ bool retro_load_game(const struct retro_game_info *info)
   }
    printf("SAVE_DIRECTORY: %s\n", retro_save_directory);
 
+#if !defined(SF2000)
    sprintf(core_sys_directory,"%s%cmame2000\0",retro_system_directory,slash);
    sprintf(core_save_directory,"%s%cmame2000\0",retro_save_directory,slash);
+#else
+   sprintf(core_sys_directory,"%s%cmame2000",retro_system_directory,slash);
+   sprintf(core_save_directory,"%s%cmame2000",retro_save_directory,slash);
+#endif
+
    printf("MAME2000_SYS_DIRECTORY: %s\n", core_sys_directory);
    printf("MAME2000_SAVE_DIRECTORY: %s\n", core_save_directory);
 
@@ -857,6 +923,9 @@ bool retro_load_game(const struct retro_game_info *info)
    strcat(IMAMESAMPLEPATH, "/samples");
 
    /* do we have a driver for this? */
+#if defined(SF2000)
+   game_index = -1;
+#endif
    for (i = 0; drivers[i] && (game_index == -1); i++)
    {
 	   if (strcasecmp(baseName,drivers[i]->name) == 0)
@@ -871,6 +940,9 @@ bool retro_load_game(const struct retro_game_info *info)
 	   printf("Game \"%s\" not supported\n", baseName);
 	   return false;
    }
+#if defined(SF2000)
+   printf("game_index=%d driver_name=%s\n", game_index, drivers[game_index]->name);
+#endif
 
    /* parse generic (os-independent) options */
    //parse_cmdline (argc, argv, game_index);
@@ -911,6 +983,10 @@ bool retro_load_game(const struct retro_game_info *info)
    Machine->sample_rate = sample_rate;
    options.samplerate = sample_rate;
    usestereo = stereo_enabled;
+
+#if defined(SF2000)
+   printf("sample_rate=%d\n", sample_rate);
+#endif
 
    /* This is needed so emulated YM3526/YM3812 chips are used instead on physical ones. */
    options.use_emulated_ym3812 = 1;
@@ -1037,13 +1113,23 @@ bool retro_load_game(const struct retro_game_info *info)
 
    decompose_rom_sample_path(IMAMEBASEPATH, IMAMESAMPLEPATH);
 
+#if !defined(SF2000)
    mame_sleep = 1;
+#endif
 
 #ifdef WANT_LIBCO
    main_thread = co_active();
    core_thread = co_create(0x10000, run_thread_proc);
    co_switch(core_thread);
+#if defined(SF2000)
+   extern int bailing;
+   if (bailing)
+       return false;
+#endif   
 #else
+#if defined(SF2000)
+   mame_sleep = 1;
+#endif   
    run_thread = sthread_create(run_thread_proc, NULL);
 #endif
 

@@ -322,6 +322,18 @@ else ifeq ($(platform), gcw0)
    DISABLE_ERROR_LOGGING := 1
    CFLAGS += -march=mips32 -mtune=mips32r2 -mhard-float
 
+# SF2000
+else ifeq ($(platform), sf2000)
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
+   MIPS:=/opt/mips32-mti-elf/2019.09-03-2/bin/mips-mti-elf-
+   CC = $(MIPS)gcc
+   AR = $(MIPS)ar
+   CFLAGS = -EL -march=mips32 -mtune=mips32 -msoft-float -ffast-math -fomit-frame-pointer
+   CFLAGS += -G0 -mno-abicalls -fno-pic 
+   CFLAGS += -ffunction-sections -fdata-sections
+   CFLAGS += -DSF2000 -DDISABLE_ERROR_LOGGING
+   STATIC_LINKING = 1
+
 # MIYOO
 else ifeq ($(platform), miyoo)
    TARGET := $(TARGET_NAME)_libretro.so

@@ -474,6 +474,11 @@ struct tilemap *tilemap_create(
 			first_tilemap = tilemap;
 			return tilemap;
 		}
+#if defined(SF2000)
+		else
+			printf("error creating tilemap\n");
+
+#endif
 		tilemap_dispose( tilemap );
 	}
 	return 0;
@@ -484,9 +489,17 @@ void tilemap_dispose( struct tilemap *tilemap ){
 		first_tilemap = tilemap->next;
 	}
 	else {
+#if !defined(SF2000)
 		struct tilemap *prev = first_tilemap;
 		while( prev->next != tilemap ) prev = prev->next;
 		prev->next =tilemap->next;
+#else
+		if (first_tilemap) {
+			struct tilemap *prev = first_tilemap;
+			while( prev->next != tilemap ) prev = prev->next;
+			prev->next =tilemap->next;
+		}
+#endif
 	}
 
 	free( tilemap->cached_tile_info );
