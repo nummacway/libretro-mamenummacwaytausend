@@ -3448,11 +3448,14 @@ if (Machine->gamedrv->flags & GAME_COMPUTER)
 	/* This call is for the cheat, it must be called once a frame */
 	if (options.cheat) DoCheat(bitmap);
 
+#if !defined(SF2000)
+	// exiting the emulation like this on SF2000 causes a crash!
 	/* if the user pressed ESC, stop the emulation */
 	/* but don't quit if the setup menu is on screen */
 	if (setup_selected == 0 && input_ui_pressed(IPT_UI_CANCEL))
 		return 1;
 
+#endif
 	if (setup_selected == 0 && input_ui_pressed(IPT_UI_CONFIGURE))
 	{
 		setup_selected = -1;
