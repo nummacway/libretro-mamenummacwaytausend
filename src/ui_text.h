@@ -25,6 +25,9 @@ enum
 	UI_cpu,
 	UI_address,
 	UI_value,
+#if defined(SF2000)
+	UI_rotation_mode,
+#endif
 	UI_sound,
 	UI_sound_lc, /* lower-case version */
 	UI_stereo,

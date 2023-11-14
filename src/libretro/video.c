@@ -72,6 +72,9 @@ float brightness_paused_adjust;
 int gfx_width;
 int gfx_height;
 
+#if defined(SF2000)
+unsigned int rotation_mode;
+#endif
 static int viswidth;
 static int visheight;
 static int skiplinesmax;
@@ -967,6 +970,17 @@ float osd_get_gamma(void)
 	return osd_gamma_correction;
 }
 
+#if defined(SF2000)
+void osd_set_rotation_mode(unsigned int _rotation_mode)
+{
+	rotation_mode = _rotation_mode;
+}
+
+unsigned int osd_get_rotation_mode(void)
+{
+	return rotation_mode;
+}
+#endif
 /* brightess = percentage 0-100% */
 void osd_set_brightness(int _brightness)
 {

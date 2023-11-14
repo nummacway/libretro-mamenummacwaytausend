@@ -37,6 +37,9 @@ int init_machine(void);
 void shutdown_machine(void);
 int run_machine(void);
 
+#if defined(SF2000)
+extern unsigned int original_machine_orientation;
+#endif
 void overlay_free(void);
 void backdrop_free(void);
 void overlay_remap(void);
@@ -250,6 +253,51 @@ int init_machine(void)
 	/* load input ports settings (keys, dip switches, and so on) */
 	settingsloaded = load_input_port_settings();
 
+#if defined(SF2000)
+   original_machine_orientation = Machine->orientation;
+
+   switch (osd_get_rotation_mode())
+   {
+   case 0: // no rotation
+      break;
+   case 90:
+      /* if only one of the components is inverted, switch them */
+      if ((Machine->orientation & ROT180) == ORIENTATION_FLIP_X ||
+         (Machine->orientation & ROT180) == ORIENTATION_FLIP_Y)
+            Machine->orientation ^= ROT180;
+
+      Machine->orientation ^= ROT90;
+
+      /* if only one of the components is inverted, switch them */
+      if ((Machine->ui_orientation & ROT180) == ORIENTATION_FLIP_X ||
+         (Machine->ui_orientation & ROT180) == ORIENTATION_FLIP_Y)
+            Machine->ui_orientation ^= ROT180;
+
+      Machine->ui_orientation ^= ROT90;
+      break;
+   case 180:
+      Machine->orientation ^= ROT180;
+      Machine->ui_orientation ^= ROT180;
+      break;
+   case 270:
+      /* if only one of the components is inverted, switch them */
+      if ((Machine->orientation & ROT180) == ORIENTATION_FLIP_X ||
+         (Machine->orientation & ROT180) == ORIENTATION_FLIP_Y)
+            Machine->orientation ^= ROT180;
+
+      Machine->orientation ^= ROT270;
+
+      /* if only one of the components is inverted, switch them */
+      if ((Machine->ui_orientation & ROT180) == ORIENTATION_FLIP_X ||
+         (Machine->ui_orientation & ROT180) == ORIENTATION_FLIP_Y)
+            Machine->ui_orientation ^= ROT180;
+
+      Machine->ui_orientation ^= ROT270;
+      break;
+   default: // no rotation
+      break;
+   }
+#endif
 	if( !memory_init() )
 		goto out_free;
 

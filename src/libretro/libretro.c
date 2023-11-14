@@ -378,6 +378,17 @@ void retro_reset(void)
    machine_reset();
 }
 
+#if defined(SF2000)
+void update_geometry()
+{
+	const bool rotated = ((Machine->orientation == ROT90) || (Machine->orientation == ROT270));
+	struct retro_system_av_info system_av_info;
+	system_av_info.geometry.base_width   = emulated_width;
+	system_av_info.geometry.base_height  = emulated_height;
+	system_av_info.geometry.aspect_ratio = (rotated) ? ( (float) 3 / (float) 4) : ( (float) 4/ (float) 3);
+	environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
+}
+#endif
 static void update_input(void)
 {
 #if !defined(SF2000)
@@ -711,7 +722,6 @@ void retro_get_system_info(struct retro_system_info *info)
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-   
    float aspect_ratio = Machine->orientation & ORIENTATION_SWAP_XY? ( (float) 3 / (float) 4) : ( (float) 4/ (float) 3);
 #ifndef WANT_LIBCO
    lock_mame();

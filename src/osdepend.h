@@ -95,6 +95,10 @@ int osd_skip_this_frame(void);
 void osd_update_video_and_audio(struct osd_bitmap *bitmap);
 void osd_set_gamma(float _gamma);
 float osd_get_gamma(void);
+#if defined(SF2000)
+void osd_set_rotation_mode(unsigned int rotation_mode);
+unsigned osd_get_rotation_mode(void);
+#endif
 void osd_set_brightness(int brightness);
 int osd_get_brightness(void);
 void osd_save_snapshot(struct osd_bitmap *bitmap);

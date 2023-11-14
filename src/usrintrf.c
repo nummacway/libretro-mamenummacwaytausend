@@ -26,6 +26,12 @@ extern char build_version[];
 extern unsigned int dispensed_tickets;
 extern unsigned int coins[COIN_COUNTERS];
 extern unsigned int coinlockedout[COIN_COUNTERS];
+#if defined(SF2000)
+#include <libretro.h>
+extern unsigned int original_machine_orientation;
+extern int emulated_width;
+extern int emulated_height;
+#endif
 
 /* MARTINEZ.F 990207 Memory Card */
 #ifndef MESS
@@ -3134,6 +3140,56 @@ static void onscrd_mixervol(struct osd_bitmap *bitmap,int increment,int arg)
 	displayosd(bitmap,buf,volume,mixer_get_default_mixing_level(arg));
 }
 
+#if defined(SF2000)
+static void onscrd_rotation_mode(struct osd_bitmap *bitmap,int increment,int arg)
+{
+	char buf[20];
+	unsigned int rotation_mode;
+
+	if (increment)
+	{
+		rotation_mode = osd_get_rotation_mode();
+		rotation_mode += 90 * increment;
+		if (rotation_mode < 0) rotation_mode = 0;
+		else if (rotation_mode > 270) rotation_mode = 270;
+		else
+		{
+			Machine->orientation = original_machine_orientation;
+			switch (rotation_mode)
+			{
+				case 0:
+					break;
+				case 90:
+					/* if only one of the components is inverted, switch them */
+					if ((Machine->orientation & ROT180) == ORIENTATION_FLIP_X ||
+						(Machine->orientation & ROT180) == ORIENTATION_FLIP_Y)
+							Machine->orientation ^= ROT180;
+
+					Machine->orientation ^= ROT90;
+					break;
+				case 180:
+					Machine->orientation ^= ROT180;
+					break;
+				case 270:
+					/* if only one of the components is inverted, switch them */
+					if ((Machine->orientation & ROT180) == ORIENTATION_FLIP_X ||
+						(Machine->orientation & ROT180) == ORIENTATION_FLIP_Y)
+							Machine->orientation ^= ROT180;
+
+					Machine->orientation ^= ROT270;
+					break;
+			}
+			osd_set_rotation_mode(rotation_mode);
+			update_geometry();
+			cpu_set_reset_line(0,PULSE_LINE);
+		}
+	}
+	rotation_mode = osd_get_rotation_mode();
+
+	sprintf(buf,"%s %3d%%", ui_getstring (UI_rotation_mode), rotation_mode);
+	displayosd(bitmap,buf,100*rotation_mode/270,0);
+}
+#endif
 static void onscrd_brightness(struct osd_bitmap *bitmap,int increment,int arg)
 {
 	char buf[20];
@@ -3240,6 +3296,11 @@ static void onscrd_init(void)
 
 
 	item = 0;
+#if defined(SF2000)
+	onscrd_fnc[item] = onscrd_rotation_mode;
+	onscrd_arg[item] = 0;
+	item++;
+#endif
 
 	onscrd_fnc[item] = onscrd_volume;
 	onscrd_arg[item] = 0;

@@ -14,6 +14,9 @@ unsigned int dispensed_tickets;
 unsigned int coins[COIN_COUNTERS];
 unsigned int lastcoin[COIN_COUNTERS];
 unsigned int coinlockedout[COIN_COUNTERS];
+#if defined(SF2000)
+unsigned int original_machine_orientation;
+#endif
 
 data_t flip_screen_x, flip_screen_y;
 

@@ -679,8 +679,18 @@ int load_input_port_settings(void)
 			if (readint(f,&coins[i]) != 0)
 				goto getout;
 		}
+#if !defined(SF2000)
 		if (readint(f,&dispensed_tickets) != 0)
 			goto getout;
+#else
+		osd_set_rotation_mode(0);
+		/* HACK: ignore ticket tracking; reuse value for TATE Mode */
+		unsigned int rotation_mode;
+		if (readint(f,&rotation_mode) != 0)
+			goto getout;
+		else
+			osd_set_rotation_mode(rotation_mode);
+#endif
 
 		mixer_read_config(f);
 
@@ -988,8 +998,13 @@ void save_input_port_settings(void)
 		/* write out the coin/ticket counters for this machine - LBO 042898 */
 		for (i = 0; i < COIN_COUNTERS; i ++)
 			writeint(f,coins[i]);
+#if !defined(SF2000)
 		writeint(f,dispensed_tickets);
 
+#else
+		/* HACK: ignore ticket tracking; reuse value for TATE Mode */
+		writeint(f,osd_get_rotation_mode());
+#endif
 		mixer_write_config(f);
 
 		osd_fclose(f);

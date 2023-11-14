@@ -40,6 +40,9 @@ const char * default_text[] =
 	"CPU",
 	"Address",
 	"Value",
+#if defined(SF2000)
+	"Rotation",
+#endif
 	"Sound",
 	"sound",
 	"stereo",
