@@ -402,6 +402,12 @@ static void update_input(void)
 	input_poll_cb();
 	
 	key[KEY_TAB] = 0;
+	key[KEY_TILDE] = 0;
+	key[KEY_P] = 0;
+	key[KEY_F3] = 0;
+	key[KEY_TAB] = 0;
+	key[KEY_ESC] = 0;
+	
 	for (i = 0; i < 4; i++)
 	{
 		key[KEY_1 + i] = 0;
@@ -435,7 +441,11 @@ static void update_input(void)
 		joy_pressed[c++] = JS(i, R);
 
 #if defined(SF2000)
-		key[KEY_TAB] |= (JS(i, L) > 0) && (JS(i, START) > 0);
+		key[KEY_TAB] |= (JS(i, L) > 0) && (JS(i, START) > 0);	// config menu: L + START
+		key[KEY_TILDE] |= (JS(i, R) > 0) && (JS(i, START) > 0);	//    OSD menu: R + START
+		key[KEY_P] |= (JS(i, R) > 0) && (JS(i, L) > 0);			//       pause: R + L
+		key[KEY_F3] |= (JS(i, R) > 0) && (JS(i, SELECT) > 0);	//  reset game: R + SELECT
+		key[KEY_ESC]  |= (JS(i, A) > 0);						// menu cancel: A
 #else
 		key[KEY_TAB] |= JS(i, R2);
 #endif
@@ -456,7 +466,7 @@ static void update_input(void)
 	key[KEY_M] =RK(0, m);
 	key[KEY_N] =RK(0, n);
 	key[KEY_O] =RK(0, o);
-	key[KEY_P] =RK(0, p);
+	key[KEY_P] |=RK(0, p);
 	key[KEY_Q] =RK(0, q);
 	key[KEY_R] =RK(0, r);
 	key[KEY_S] =RK(0, s);
@@ -489,7 +499,7 @@ static void update_input(void)
 	key[KEY_9_PAD] =RK(0, KP9);
 	key[KEY_F1] =RK(0, F1);
 	key[KEY_F2] =RK(0, F2);
-	key[KEY_F3] =RK(0, F3);
+	key[KEY_F3] |=RK(0, F3);
 	key[KEY_F4] =RK(0, F4);
 	key[KEY_F5] =RK(0, F5);
 	key[KEY_F6] =RK(0, F6);
@@ -499,8 +509,8 @@ static void update_input(void)
 	key[KEY_F10] =RK(0, F10);
 	key[KEY_F11] =RK(0, F11);
 	key[KEY_F12] =RK(0, F12);
-	key[KEY_ESC] =RK(0, ESCAPE);
-	key[KEY_TILDE] =RK(0, TILDE);
+	key[KEY_ESC] |=RK(0, ESCAPE);
+	key[KEY_TILDE] |=RK(0, TILDE);
 	key[KEY_MINUS] =RK(0, MINUS);
 	key[KEY_EQUALS] =RK(0, EQUALS);
 	key[KEY_BACKSPACE] =RK(0, BACKSPACE);
