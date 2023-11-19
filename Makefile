@@ -328,9 +328,8 @@ else ifeq ($(platform), sf2000)
    MIPS:=/opt/mips32-mti-elf/2019.09-03-2/bin/mips-mti-elf-
    CC = $(MIPS)gcc
    AR = $(MIPS)ar
-   CFLAGS = -EL -march=mips32 -mtune=mips32 -msoft-float -ffast-math -fomit-frame-pointer
-   CFLAGS += -G0 -mno-abicalls -fno-pic 
-   CFLAGS += -ffunction-sections -fdata-sections
+   CFLAGS = -EL -march=mips32 -mtune=mips32 -msoft-float -G0 -mno-abicalls -fno-pic
+   CFLAGS += -ffast-math -fomit-frame-pointer -ffunction-sections -fdata-sections 
    CFLAGS += -DSF2000 -DDISABLE_ERROR_LOGGING
    STATIC_LINKING = 1
 
@@ -536,7 +535,11 @@ endif
 ifeq ($(DEBUG), 1)
 CFLAGS += -O0 -g
 else
+ifeq ($(platform), sf2000)
+CFLAGS += -O3 -DNDEBUG
+else
 CFLAGS += -O2 -DNDEBUG
+endif
 endif
 
 # compiler, linker and utilities
