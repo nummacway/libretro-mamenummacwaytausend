@@ -67,6 +67,7 @@ int should_skip_frame                    = 0;
 
 static int sample_rate                   = 22050;
 static int stereo_enabled                = true;
+static int audio_enabled                 = true;
 
 int game_index = -1;
 unsigned short *gp2x_screen15;
@@ -317,6 +318,19 @@ static void update_variables(bool first_run)
     else
         stereo_enabled = true;
 
+	var.value = NULL;
+    var.key = "mame2000-audio";
+    
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+        if(strcmp(var.value, "enabled") == 0)
+            audio_enabled = true;
+        else
+            audio_enabled = false;
+    }
+    else
+        audio_enabled = true;
+	
    /* Reinitialise frameskipping, if required */
    if (!first_run &&
        ((frameskip_type     != prev_frameskip_type)))
@@ -333,6 +347,7 @@ void retro_set_environment(retro_environment_t cb)
       { "mame2000-show_gameinfo", "Show Game Information; disabled|enabled" },
       { "mame2000-sample_rate", "Audio Rate (Restart); 22050|11025|22050|32000|44100" },
       { "mame2000-stereo", "Stereo (Restart); enabled|disabled" },
+	  { "mame2000-audio", "Sound (Restart); enabled|disabled" },
       { NULL, NULL },
    };
    environ_cb = cb;
@@ -776,18 +791,21 @@ void retro_run(void)
    else
       video_cb(gp2x_screen15, gfx_width, gfx_height, gfx_width * 2);
 
-   if (samples_per_frame)
+   if (audio_enabled)
    {
-      if (usestereo)
-         audio_batch_cb(samples_buffer, samples_per_frame);
-      else
+      if (samples_per_frame)
       {
-         for (i = 0, j = 0; i < samples_per_frame; i++)
+         if (usestereo)
+            audio_batch_cb(samples_buffer, samples_per_frame);
+         else
          {
-            conversion_buffer[j++] = samples_buffer[i];
-            conversion_buffer[j++] = samples_buffer[i];
+            for (i = 0, j = 0; i < samples_per_frame; i++)
+            {
+               conversion_buffer[j++] = samples_buffer[i];
+               conversion_buffer[j++] = samples_buffer[i];
+            }
+            audio_batch_cb(conversion_buffer, samples_per_frame);
          }
-         audio_batch_cb(conversion_buffer, samples_per_frame);
       }
    }
 
