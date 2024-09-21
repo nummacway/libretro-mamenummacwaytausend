@@ -2974,7 +2974,7 @@ TESTDRIVER( dlair )
 	DRIVER( rbff1 )		/* 0095 (c) 1995 SNK */
 	DRIVER( aof3 )		/* 0096 (c) 1996 SNK */
 	DRIVER( sonicwi3 )	/* 0097 (c) 1995 Video System Co. */
-	/* 0098 Idol Mahjong - final romance 2 (CD only? not confirmed, MVS might exist) */
+	DRIVER( froman2b )	/* 0098 Idol Mahjong - final romance 2 (CD only? not confirmed, MVS might exist) */
 	/* 0099 */
 	DRIVER( turfmast )	/* 0200 (c) 1996 Nazca */
 	DRIVER( mslug )		/* 0201 (c) 1996 Nazca */
@@ -3024,14 +3024,97 @@ TESTDRIVER( dlair )
 	DRIVER( breakrev )	/* 0245 (c) 1998 Visco */
 	DRIVER( shocktr2 )	/* 0246 (c) 1998 Saurus */
 	DRIVER( flipshot )	/* 0247 (c) 1998 Visco */
-TESTDRIVER( pbobbl2n )	/* 0248 (c) 1999 Taito (SNK license) */
-TESTDRIVER( ctomaday )	/* 0249 (c) 1999 Visco */
-TESTDRIVER( mslugx )	/* 0250 (c) 1999 SNK */
-TESTDRIVER( kof99 )		/* 0251 (c) 1999 SNK */
-TESTDRIVER( garou )		/* 0253 (c) 1999 SNK */
+  DRIVER( pbobbl2n )	/* 0248 (c) 1999 Taito (SNK license) */
+  DRIVER( ctomaday )	/* 0249 (c) 1999 Visco */
+  DRIVER( mslugx )	/* 0250 (c) 1999 SNK */
+  DRIVER( kof99 )		/* 0251 (c) 1999 SNK */
+  DRIVER( garou )		/* 0253 (c) 1999 SNK */
 	/* Prehistoric Isle 2 */
 	/* Strikers 1945 Plus */
 	/* Ganryu */
+  
+  DRIVER( b2b )		/* 071 (c) 2000 Visco */
+  DRIVER( diggerma )	/* unlicenses prototype */
+  DRIVER( alpham2p )
+  TESTDRIVER( pnyaa )
+  DRIVER( vliner )
+  DRIVER( etyphoon )
+  DRIVER( teot )
+  DRIVER( looptris )
+  DRIVER( looptrsp )
+  DRIVER( totc )
+  DRIVER( gladmort )
+  TESTDRIVER( beast )
+  TESTDRIVER( nblktiger )
+  DRIVER( neotris )
+  DRIVER( 4play )
+  DRIVER( columnsn )
+  DRIVER( neonopon )
+  DRIVER( syscheck )
+  DRIVER( cyborgforce )
+  DRIVER( test240p )
+  DRIVER( yoyoshkn )
+  DRIVER( amazoneo )
+  DRIVER( hypernoid )
+  DRIVER( ngmontst )
+  DRIVER( poknight )
+  DRIVER( cabalng )
+  DRIVER( xeviousng )
+  DRIVER( mslug3x )
+  DRIVER( 19yy )
+  DRIVER( 19yyo )
+  DRIVER( abyssali )
+  DRIVER( nsmb )
+  DRIVER( xenocrisis )
+  DRIVER( xeno )
+  DRIVER( dragonsh )
+  DRIVER( crswd2bl )
+  DRIVER( mslug4fd )
+  DRIVER( jockeygpn )
+  TESTDRIVER( preisle2 )
+  DRIVER( preisl2n )
+  TESTDRIVER( zupapa )
+  DRIVER( zupapan )
+  DRIVER( bangbedp )
+  DRIVER( nitdbl )
+  DRIVER( sengk3fd )
+  TESTDRIVER( ganryu )
+  DRIVER( ganryun )
+  DRIVER( proneon )
+  DRIVER( neogalag )
+  DRIVER( neoprimo )
+  DRIVER( neotet )
+  DRIVER( neo3ddmo )
+  DRIVER( neothndr )
+  DRIVER( neoww2 )
+  DRIVER( ngftdemo )
+  DRIVER( santaball )
+  DRIVER( timesup )
+  DRIVER( neopang )
+  DRIVER( cndi )
+  DRIVER( ducki )
+  DRIVER( dwi )
+  DRIVER( ghostbi )
+  DRIVER( robocopi )
+  DRIVER( spidermi )
+  DRIVER( tmnti )
+  DRIVER( lhcdb )
+  DRIVER( cnbe )
+  DRIVER( ngem2k )
+  DRIVER( ngfrog )
+  DRIVER( lasthope )
+  DRIVER( ltorb )
+  DRIVER( neo2500 )
+  DRIVER( neocstlv )
+  DRIVER( neodemo )
+  DRIVER( neopong )
+  DRIVER( ghostlop )
+  DRIVER( zintrckb )
+  DRIVER( moshougi )
+  DRIVER( knightsch )
+  DRIVER( ironclad )
+  DRIVER( sbp )
+
 
 //#endif /* NEOMAME */
 
